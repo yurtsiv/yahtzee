@@ -16,12 +16,68 @@ public class ScoreTable {
         return result;
     }
 
+    private static int getSumOf (int[] turnResult) {
+        return Arrays.stream(turnResult).sum();
+    }
+
     private static int getSumOf (int diceNumber, int[] turnResult) {
         return ScoreTable.getAmountOf(diceNumber, turnResult) * diceNumber;
     }
 
-//    private static int getThreeOfAKindResult (int[] turnResult) {
-//    }
+    private static int getSameOfAKindResult (int amountOfSameKind, int[] turnResult) {
+        int result = 0;
+        for (int kind = 1; kind <= 5; kind++) {
+            int sameKindCount = 0;
+            for (int dice : turnResult) {
+                if (dice == kind) {
+                    sameKindCount++;
+                }
+                if (sameKindCount == amountOfSameKind) {
+                    return ScoreTable.getSumOf(turnResult);
+                }
+            }
+        }
+        return result;
+    }
+
+
+    private static int getFullHouseResult (int[] turnResult) {
+        boolean twoOfSameKind = false, threeOfSameKind = false;
+
+        for (int kind = 1; kind <= 5; kind++) {
+            int sameKindCount = 0;
+
+            for (int dice : turnResult) {
+                if (dice == kind) {
+                    sameKindCount++;
+                }
+            }
+
+            twoOfSameKind = sameKindCount == 2;
+            threeOfSameKind = sameKindCount == 3;
+        }
+
+        return twoOfSameKind && threeOfSameKind ? 50 : 0;
+    }
+
+    private static boolean containsUniqElems (int uniqElems, int[] array) {
+        return Arrays
+                .stream(array)
+                .distinct()
+                .toArray().length == uniqElems;
+    }
+
+    private static int getSmallStraightResult (int[] turnResult) {
+        return ScoreTable.containsUniqElems(4, turnResult) ? 30 : 0;
+    }
+
+    private static int getLargeStraightResult (int[] turnResult) {
+        return ScoreTable.containsUniqElems(5, turnResult) ? 40 : 0;
+    }
+
+    private static int getYahtzeeResult (int[] turnResult) {
+        return ScoreTable.containsUniqElems(1, turnResult) ? 50 : 0;
+    }
 
     public void put (String key, int[] turnResult) {
         switch (key) {
@@ -50,34 +106,31 @@ public class ScoreTable {
                 break;
 
             case "threeOfAKind":
-                // sum of all
-                this.scoreTable.put("threeOfAKind", 17);
+                this.scoreTable.put("threeOfAKind", ScoreTable.getSameOfAKindResult(3, turnResult));
                 break;
 
             case "fourOfAKind":
-                // sum of all
-                this.scoreTable.put("fourOfAKind", 24);
+                this.scoreTable.put("fourOfAKind", ScoreTable.getSameOfAKindResult(4, turnResult));
                 break;
 
             case "fullHouse":
-                this.scoreTable.put("fullHouse", 50);
+                this.scoreTable.put("fullHouse", ScoreTable.getFullHouseResult(turnResult));
                 break;
 
             case "smallStraight":
-                this.scoreTable.put("smallStraight", 30);
+                this.scoreTable.put("smallStraight", ScoreTable.getSmallStraightResult(turnResult));
                 break;
 
             case "largeStraight":
-                this.scoreTable.put("largeStraight", 40);
+                this.scoreTable.put("largeStraight", ScoreTable.getLargeStraightResult(turnResult));
                 break;
 
             case "yahtzee":
-                this.scoreTable.put("yahtzee", 50);
+                this.scoreTable.put("yahtzee", ScoreTable.getYahtzeeResult(turnResult));
                 break;
 
             case "chance":
-                // sum of all
-                this.scoreTable.put("chance", 10);
+                this.scoreTable.put("chance", ScoreTable.getSumOf(turnResult));
         }
     }
 
