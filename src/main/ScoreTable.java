@@ -4,7 +4,7 @@ import java.util.Hashtable;
 import java.util.Arrays;
 
 public class ScoreTable {
-    private Hashtable<String, Integer> scoreTable;
+    private Hashtable<String, Integer> upperSection, lowerSection;
 
     private static int getAmountOf (int diceNumberToFindAmounOf, int[] turnResult) {
         int result = 0;
@@ -79,59 +79,72 @@ public class ScoreTable {
         return ScoreTable.containsUniqElems(1, turnResult) ? 50 : 0;
     }
 
+    private void checkForBonus () {
+        int upperSectionSum = 0;
+        for (int val : this.upperSection.values()) {
+            upperSectionSum += val;
+        }
+
+        if (upperSectionSum >= 63) {
+            this.upperSection.put("bonus", 35);
+        }
+    }
+
     public void put (String key, int[] turnResult) {
         switch (key) {
             case "ones":
-                this.scoreTable.put("ones", ScoreTable.getSumOf(1, turnResult));
+                this.upperSection.put("ones", ScoreTable.getSumOf(1, turnResult));
                 break;
 
             case "twos":
-                this.scoreTable.put("twos", ScoreTable.getSumOf(2, turnResult));
+                this.upperSection.put("twos", ScoreTable.getSumOf(2, turnResult));
                 break;
 
             case "threes":
-                this.scoreTable.put("threes", ScoreTable.getSumOf(3, turnResult));
+                this.upperSection.put("threes", ScoreTable.getSumOf(3, turnResult));
                 break;
 
             case "fours":
-                this.scoreTable.put("fours", ScoreTable.getSumOf(4, turnResult));
+                this.upperSection.put("fours", ScoreTable.getSumOf(4, turnResult));
                 break;
 
             case "fives":
-                this.scoreTable.put("fives", ScoreTable.getSumOf(5, turnResult));
+                this.upperSection.put("fives", ScoreTable.getSumOf(5, turnResult));
                 break;
 
             case "sixes":
-                this.scoreTable.put("sixes", ScoreTable.getSumOf(6, turnResult));
+                this.upperSection.put("sixes", ScoreTable.getSumOf(6, turnResult));
                 break;
 
             case "threeOfAKind":
-                this.scoreTable.put("threeOfAKind", ScoreTable.getSameOfAKindResult(3, turnResult));
+                this.lowerSection.put("threeOfAKind", ScoreTable.getSameOfAKindResult(3, turnResult));
                 break;
 
             case "fourOfAKind":
-                this.scoreTable.put("fourOfAKind", ScoreTable.getSameOfAKindResult(4, turnResult));
+                this.lowerSection.put("fourOfAKind", ScoreTable.getSameOfAKindResult(4, turnResult));
                 break;
 
             case "fullHouse":
-                this.scoreTable.put("fullHouse", ScoreTable.getFullHouseResult(turnResult));
+                this.lowerSection.put("fullHouse", ScoreTable.getFullHouseResult(turnResult));
                 break;
 
             case "smallStraight":
-                this.scoreTable.put("smallStraight", ScoreTable.getSmallStraightResult(turnResult));
+                this.lowerSection.put("smallStraight", ScoreTable.getSmallStraightResult(turnResult));
                 break;
 
             case "largeStraight":
-                this.scoreTable.put("largeStraight", ScoreTable.getLargeStraightResult(turnResult));
+                this.lowerSection.put("largeStraight", ScoreTable.getLargeStraightResult(turnResult));
                 break;
 
             case "yahtzee":
-                this.scoreTable.put("yahtzee", ScoreTable.getYahtzeeResult(turnResult));
+                this.lowerSection.put("yahtzee", ScoreTable.getYahtzeeResult(turnResult));
                 break;
 
             case "chance":
-                this.scoreTable.put("chance", ScoreTable.getSumOf(turnResult));
+                this.lowerSection.put("chance", ScoreTable.getSumOf(turnResult));
         }
+
+        this.checkForBonus();
     }
 
     public void print () {
