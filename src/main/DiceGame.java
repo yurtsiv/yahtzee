@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class DiceGame {
     private Dices dices = new Dices(5);
     private Player[] players;
-    private int currentTurn = 0, maxTurns, currentPlayerIndex;
+    private int currentTurn = 1, maxTurns, currentPlayerIndex;
 
     public void initialize () {
         int playersAmount;
@@ -30,7 +30,7 @@ public class DiceGame {
 
     public void turn () {
         Player currentPlayer = this.players[this.currentPlayerIndex];
-        System.out.println(currentPlayer.getName() + "'s turn");
+        System.out.println(currentPlayer.getName() + "'s " + this.currentTurn + " turn");
 
         int rollNum = 1;
         boolean shouldContinueTurn = true;
@@ -69,12 +69,22 @@ public class DiceGame {
         }
 
         // player.updateScore(turnResult);
+        if (players.length - 1 == this.currentPlayerIndex) {
+            this.currentPlayerIndex = 0;
+            this.currentTurn++;
+        } else {
+            this.currentPlayerIndex++;
+        }
+
     }
 
     public static void main(String[] args) {
 	    DiceGame game = new DiceGame();
 	    game.initialize();
-	    game.turn();
+
+        for (int i = 0; i < game.maxTurns * game.players.length; i++) {
+            game.turn();
+        }
 
 	    System.out.println("Game finished");
     }
