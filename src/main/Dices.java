@@ -34,6 +34,8 @@ public class Dices {
         this.amount = newAmount;
     }
 
+    public int getAmount () { return this.amount; }
+
     public void print () {
         for (int dice : this.state) {
             System.out.print(" | " + dice);

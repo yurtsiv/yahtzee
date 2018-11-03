@@ -15,4 +15,9 @@ public class UserInteraction {
 
         return list.stream().mapToInt(i -> i).toArray();
     }
+
+    public static boolean yesNoQuestion (String question) {
+        System.out.println(question + " (yes/no)");
+        return new Scanner(System.in).hasNext("yes");
+    }
 }
