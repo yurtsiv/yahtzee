@@ -5,62 +5,64 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class DiceGame {
-    private Dices dices = new Dices(5);
     private Player[] players;
-    private int currentTurn = 1, maxTurns, currentPlayerIndex;
+    private int currentTurn = 1, currentPlayerIndex;
+    private final int gameTurns = 3;
 
     public void initialize () {
         int playersAmount;
         String playerName;
         Scanner userInput = new Scanner(System.in);
 
-        System.out.println("Amount of players (2-4):");
+        System.out.println("Number of players (2-4):");
         playersAmount = userInput.nextInt();
-        this.players = new Player[playersAmount];
+        players = new Player[playersAmount];
         for (int i = 0; i < playersAmount; i++) {
             System.out.println("Player " + i + "'s name:");
             playerName = userInput.next();
-            this.players[i] = new Player(playerName);
+            players[i] = new Player(playerName);
         }
 
-        System.out.println("Turns amount:");
-        this.maxTurns = userInput.nextInt();
-        this.currentPlayerIndex = 0;
+        currentPlayerIndex = 0;
     }
 
     public void turn () {
-        Player currentPlayer = this.players[this.currentPlayerIndex];
-        System.out.println(currentPlayer.getName() + "'s " + this.currentTurn + " turn");
-
+        System.out.println("-----------------------------");
+        Player currentPlayer = players[currentPlayerIndex];
         int rollNum = 1;
+        Dices dicesToRoll = new Dices(5);
+        List<Integer> keptDices = new ArrayList<>(), turnResult = new ArrayList<>();
         boolean shouldContinueTurn = true;
-        List<Integer> turnResult = new ArrayList<>();
+
+        System.out.println(currentPlayer.getName() + "'s turn #" + currentTurn);
 
         while (shouldContinueTurn && rollNum <= 3) {
-            System.out.println(rollNum + " roll:");
-            this.dices.roll();
-            this.dices.print();
+            System.out.println("Roll #" + rollNum);
 
-            if (rollNum == 3) {
-                // add remaining results to turn result
-                for (int dice : this.dices.getState()) {
-                    turnResult.add(dice);
+            if (keptDices.size() != 0) {
+                System.out.print("Kept dices: ");
+                Dices.printArbitrary(keptDices);
+                if (UserInteraction.yesNoQuestion("Do you want to take some kept dices?")) {
+                    int[] dicesIndexesToTake = UserInteraction.getIntArray("Select dices you want to take:");
+                    for (int indexToTake : dicesIndexesToTake) {
+                        keptDices.remove(indexToTake - 1);
+                    }
+
+                    dicesToRoll.setAmount(dicesToRoll.getAmount() + dicesIndexesToTake.length);
                 }
-            } else {
+            }
+
+            dicesToRoll.roll();
+            System.out.print("Roll result: ");
+            dicesToRoll.print();
+
+            if (rollNum != 3) {
                 shouldContinueTurn = UserInteraction.yesNoQuestion("Do you want to continue your turn?");
                 if (shouldContinueTurn) {
                     if (UserInteraction.yesNoQuestion("Do you want to keep any dices?")) {
-                        System.out.println("Select dices you want to keep:");
-                        int[] dicesToKeep = UserInteraction.getIntArray();
-                        for (int i = 0; i < dicesToKeep.length; i++) {
-                            turnResult.add(this.dices.getState()[dicesToKeep[i] - 1]);
-                        }
-                        this.dices.setAmount(this.dices.getAmount() - dicesToKeep.length);
-                    }
-                } else {
-                    // add remaining results to turn result
-                    for (int dice : this.dices.getState()) {
-                        turnResult.add(dice);
+                        int[] dicesIndexesToKeep = UserInteraction.getIntArray("Select dices you want to keep:");
+                        keptDices.addAll(ArrayUtils.takeIndexes(dicesIndexesToKeep, dicesToRoll.getState()));
+                        dicesToRoll.setAmount(dicesToRoll.getAmount() - dicesIndexesToKeep.length);
                     }
                 }
             }
@@ -68,24 +70,56 @@ public class DiceGame {
             rollNum++;
         }
 
-        // player.updateScore(turnResult);
-        if (players.length - 1 == this.currentPlayerIndex) {
-            this.currentPlayerIndex = 0;
-            this.currentTurn++;
-        } else {
-            this.currentPlayerIndex++;
+        // add remaining results to turn result
+        for (int dice : keptDices) {
+            turnResult.add(dice);
+        }
+        for (int dice : dicesToRoll.getState()) {
+            turnResult.add(dice);
         }
 
+        System.out.print("Your turn is finished. Result: ");
+        for (int dice : turnResult) {
+            System.out.print(" | " + dice);
+        }
+        System.out.print(" |\n");
+
+        currentPlayer.updateScore(turnResult.stream().mapToInt(Integer::intValue).toArray());
+
+        if (players.length - 1 == currentPlayerIndex) {
+            currentPlayerIndex = 0;
+            currentTurn++;
+        } else {
+            currentPlayerIndex++;
+        }
     }
+
+    public Player[] getPlayers() { return players; }
+
+    public int getTurns () { return gameTurns; }
 
     public static void main(String[] args) {
 	    DiceGame game = new DiceGame();
 	    game.initialize();
 
-        for (int i = 0; i < game.maxTurns * game.players.length; i++) {
+        for (int i = 0; i < game.getTurns() * game.getPlayers().length; i++) {
             game.turn();
         }
 
-	    System.out.println("Game finished");
+	    System.out.println("---- Game finished ----- \n");
+        Player winner = game.getPlayers()[0];
+        for (Player player : game.getPlayers()) {
+            System.out.println(player.getName() + " 's results: \n");
+            player.getScoreTable().print();
+            int totalScore = player.getScoreTable().getTotal();
+            System.out.println("\n Total score: " + totalScore);
+
+            System.out.println("------------------------- \n");
+            if (totalScore > winner.getScoreTable().getTotal()) {
+                winner = player;
+            }
+        }
+
+        System.out.println(winner.getName() + " wins!");
     }
 }

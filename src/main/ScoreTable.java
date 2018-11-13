@@ -1,15 +1,26 @@
 package main;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Arrays;
 
 public class ScoreTable {
-    private Hashtable<String, Integer> upperSection, lowerSection;
+    private HashMap<String, Integer> scoreTable = new HashMap<>();
 
-    private static int getAmountOf (int diceNumberToFindAmounOf, int[] turnResult) {
+    public ScoreTable() {
+        String[] tableKeys = new String[]{ "ones", "twos", "threes", "fours", "fives", "sixes",
+                                            "bonus", "threeOfAKind", "fourOfAKind", "fullHouse",
+                                            "smallStraight", "largeStraight", "yahtzee", "chance" };
+
+        for (String key : tableKeys) {
+            scoreTable.put(key, null);
+        }
+    }
+
+    private static int getAmountOf (int diceNumberToFindAmountOf, int[] turnResult) {
         int result = 0;
         for (int dice : turnResult) {
-            if (dice == diceNumberToFindAmounOf) {
+            if (dice == diceNumberToFindAmountOf) {
                 result ++;
             }
         }
@@ -25,8 +36,7 @@ public class ScoreTable {
     }
 
     private static int getSameOfAKindResult (int amountOfSameKind, int[] turnResult) {
-        int result = 0;
-        for (int kind = 1; kind <= 5; kind++) {
+        for (int kind = 1; kind <= 6; kind++) {
             int sameKindCount = 0;
             for (int dice : turnResult) {
                 if (dice == kind) {
@@ -37,14 +47,15 @@ public class ScoreTable {
                 }
             }
         }
-        return result;
+
+        return 0;
     }
 
 
     private static int getFullHouseResult (int[] turnResult) {
         boolean twoOfSameKind = false, threeOfSameKind = false;
 
-        for (int kind = 1; kind <= 5; kind++) {
+        for (int kind = 1; kind <= 6; kind++) {
             int sameKindCount = 0;
 
             for (int dice : turnResult) {
@@ -53,101 +64,138 @@ public class ScoreTable {
                 }
             }
 
-            twoOfSameKind = sameKindCount == 2;
-            threeOfSameKind = sameKindCount == 3;
+            if (sameKindCount == 2) {
+                twoOfSameKind = true;
+            }
+
+            if (sameKindCount == 3) {
+                threeOfSameKind = true;
+            }
         }
 
         return twoOfSameKind && threeOfSameKind ? 50 : 0;
     }
 
-    private static boolean containsUniqElems (int uniqElems, int[] array) {
-        return Arrays
-                .stream(array)
-                .distinct()
-                .toArray().length == uniqElems;
-    }
-
     private static int getSmallStraightResult (int[] turnResult) {
-        return ScoreTable.containsUniqElems(4, turnResult) ? 30 : 0;
+        // return ArrayUtils.containsUniqElems(4, turnResult) ? 30 : 0;
+        return 0;
     }
 
     private static int getLargeStraightResult (int[] turnResult) {
-        return ScoreTable.containsUniqElems(5, turnResult) ? 40 : 0;
+        // return ArrayUtils.containsUniqElems(5, turnResult) ? 40 : 0;
+        return 0;
     }
 
     private static int getYahtzeeResult (int[] turnResult) {
-        return ScoreTable.containsUniqElems(1, turnResult) ? 50 : 0;
+        return ArrayUtils.areAllElemsEqual(turnResult) ? 50 : 0;
+    }
+
+    public int getTotal () {
+        int sum = 0;
+        for (String key : scoreTable.keySet()) {
+            if (scoreTable.get(key) != null) {
+                sum += scoreTable.get(key);
+            }
+        }
+        return sum;
+    }
+
+    private int getUpperSectionSum () {
+        String[] upperSectionKeys = new String[] { "ones", "twos", "threes", "fours", "fives", "sixes" };
+        int sum = 0;
+        for (String key : upperSectionKeys) {
+            if (scoreTable.get(key) != null) {
+                sum += scoreTable.get(key);
+            }
+        }
+        return sum;
     }
 
     private void checkForBonus () {
-        int upperSectionSum = 0;
-        for (int val : this.upperSection.values()) {
-            upperSectionSum += val;
-        }
-
-        if (upperSectionSum >= 63) {
-            this.upperSection.put("bonus", 35);
+        if (getUpperSectionSum() >= 63) {
+            System.out.println("You get bonus of 63 points");
+            scoreTable.put("bonus", 35);
         }
     }
 
-    public void put (String key, int[] turnResult) {
+    private void putToTable (String key, int points) {
+        System.out.println("You scored " + points + " points");
+        scoreTable.put(key, points);
+        checkForBonus();
+    }
+
+    public void update (String key, int[] turnResult) {
         switch (key) {
             case "ones":
-                this.upperSection.put("ones", ScoreTable.getSumOf(1, turnResult));
+                putToTable("ones", ScoreTable.getSumOf(1, turnResult));
                 break;
 
             case "twos":
-                this.upperSection.put("twos", ScoreTable.getSumOf(2, turnResult));
+                putToTable("twos", ScoreTable.getSumOf(2, turnResult));
                 break;
 
             case "threes":
-                this.upperSection.put("threes", ScoreTable.getSumOf(3, turnResult));
+                putToTable("threes", ScoreTable.getSumOf(3, turnResult));
                 break;
 
             case "fours":
-                this.upperSection.put("fours", ScoreTable.getSumOf(4, turnResult));
+                putToTable("fours", ScoreTable.getSumOf(4, turnResult));
                 break;
 
             case "fives":
-                this.upperSection.put("fives", ScoreTable.getSumOf(5, turnResult));
+                putToTable("fives", ScoreTable.getSumOf(5, turnResult));
                 break;
 
             case "sixes":
-                this.upperSection.put("sixes", ScoreTable.getSumOf(6, turnResult));
+                putToTable("sixes", ScoreTable.getSumOf(6, turnResult));
                 break;
 
             case "threeOfAKind":
-                this.lowerSection.put("threeOfAKind", ScoreTable.getSameOfAKindResult(3, turnResult));
+                putToTable("threeOfAKind", ScoreTable.getSameOfAKindResult(3, turnResult));
                 break;
 
             case "fourOfAKind":
-                this.lowerSection.put("fourOfAKind", ScoreTable.getSameOfAKindResult(4, turnResult));
+                putToTable("fourOfAKind", ScoreTable.getSameOfAKindResult(4, turnResult));
                 break;
 
             case "fullHouse":
-                this.lowerSection.put("fullHouse", ScoreTable.getFullHouseResult(turnResult));
+                putToTable("fullHouse", ScoreTable.getFullHouseResult(turnResult));
                 break;
 
             case "smallStraight":
-                this.lowerSection.put("smallStraight", ScoreTable.getSmallStraightResult(turnResult));
+                putToTable("smallStraight", ScoreTable.getSmallStraightResult(turnResult));
                 break;
 
             case "largeStraight":
-                this.lowerSection.put("largeStraight", ScoreTable.getLargeStraightResult(turnResult));
+                putToTable("largeStraight", ScoreTable.getLargeStraightResult(turnResult));
                 break;
 
             case "yahtzee":
-                this.lowerSection.put("yahtzee", ScoreTable.getYahtzeeResult(turnResult));
+                putToTable("yahtzee", ScoreTable.getYahtzeeResult(turnResult));
                 break;
 
             case "chance":
-                this.lowerSection.put("chance", ScoreTable.getSumOf(turnResult));
+                putToTable("chance", ScoreTable.getSumOf(turnResult));
+        }
+    }
+
+    public void printAvailableFields () {
+        for (String key : scoreTable.keySet()) {
+            if (scoreTable.get(key) == null && !key.equals("bonus")) {
+                System.out.print("| " + key + " ");
+            }
         }
 
-        this.checkForBonus();
+        System.out.print(" |\n");
     }
 
     public void print () {
-
+        for (String key : scoreTable.keySet()) {
+            if (scoreTable.get(key) == null) {
+                System.out.println(key + ": 0");
+            } else {
+                System.out.println(key + ": " + scoreTable.get(key));
+            }
+        }
     }
 }

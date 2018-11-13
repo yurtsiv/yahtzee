@@ -1,6 +1,7 @@
 package main;
 
 import java.util.Random;
+import java.util.List;
 
 public class Dices {
     private int amount, sides;
@@ -31,6 +32,7 @@ public class Dices {
     }
 
     public void setAmount (int newAmount) {
+        this.state = new int[newAmount];
         this.amount = newAmount;
     }
 
@@ -40,6 +42,15 @@ public class Dices {
         for (int dice : this.state) {
             System.out.print(" | " + dice);
         }
-        System.out.println();
+
+        System.out.print(" | \n");
+    }
+
+    public static void printArbitrary (List<Integer> dices) {
+        for (int dice : dices) {
+            System.out.print(" | " + dice);
+        }
+
+        System.out.print(" | \n");
     }
 }
