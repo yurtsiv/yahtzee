@@ -12,14 +12,11 @@ public class DiceGame {
     public void initialize () {
         int playersAmount;
         String playerName;
-        Scanner userInput = new Scanner(System.in);
 
-        System.out.println("Number of players (2-4):");
-        playersAmount = userInput.nextInt();
+        playersAmount = UserInteraction.getInt("Players amount (2-4):", 2, 4);
         players = new Player[playersAmount];
         for (int i = 0; i < playersAmount; i++) {
-            System.out.println("Player " + i + "'s name:");
-            playerName = userInput.next();
+            playerName = UserInteraction.question("Player " + i + "'s name:");
             players[i] = new Player(playerName);
         }
 
