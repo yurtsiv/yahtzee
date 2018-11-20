@@ -39,18 +39,18 @@ public class Dices {
     public int getAmount () { return this.amount; }
 
     public void print () {
-        for (int dice : this.state) {
-            System.out.print(" | " + dice);
+        System.out.println();
+        for (int i = 0; i < state.length; i++) {
+            System.out.println((i + 1) + ". " + (state[i]));
         }
-
-        System.out.print(" | \n");
+        System.out.println();
     }
 
     public static void printArbitrary (List<Integer> dices) {
-        for (int dice : dices) {
-            System.out.print(" | " + dice);
+        System.out.println();
+        for (int i = 0; i < dices.size(); i++) {
+            System.out.println((i + 1) + ". " + (dices.get(i)));
         }
-
-        System.out.print(" | \n");
+        System.out.println();
     }
 }

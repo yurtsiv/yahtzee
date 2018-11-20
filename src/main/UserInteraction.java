@@ -44,4 +44,8 @@ public class UserInteraction {
         System.out.println(question);
         return new Scanner(System.in).next();
     }
+
+    public static void printSeparator () {
+        System.out.println("----------------------------------------------------------");
+    }
 }

@@ -1,37 +1,38 @@
 package main;
 
-import java.util.Scanner;
+import javax.jws.soap.SOAPBinding;
 import java.util.List;
 import java.util.ArrayList;
 
 public class DiceGame {
     private Player[] players;
-    private int currentTurn = 1, currentPlayerIndex;
-    private final int gameTurns = 3;
+    private int currentTurn = 1, currentPlayerIndex, gameRounds;
 
     public void initialize () {
-        int playersAmount;
+        int playersNum;
         String playerName;
 
-        playersAmount = UserInteraction.getInt("Players amount (2-4):", 2, 4);
-        players = new Player[playersAmount];
-        for (int i = 0; i < playersAmount; i++) {
-            playerName = UserInteraction.question("Player " + i + "'s name:");
+        playersNum = UserInteraction.getInt("Number of players (2-4):", 2, 4);
+        players = new Player[playersNum];
+        for (int i = 0; i < playersNum; i++) {
+            playerName = UserInteraction.question("Player " + (i + 1) + ":");
             players[i] = new Player(playerName);
         }
 
         currentPlayerIndex = 0;
+        gameRounds = UserInteraction.getInt("Number of rounds (3-13):", 3, 13);
     }
 
     public void turn () {
-        System.out.println("-----------------------------");
+        UserInteraction.printSeparator();
+
         Player currentPlayer = players[currentPlayerIndex];
         int rollNum = 1;
         Dices dicesToRoll = new Dices(5);
         List<Integer> keptDices = new ArrayList<>(), turnResult = new ArrayList<>();
         boolean shouldContinueTurn = true;
 
-        System.out.println(currentPlayer.getName() + "'s turn #" + currentTurn);
+        System.out.println(currentPlayer.getName() + "'s turn #" + currentTurn + "\n");
 
         while (shouldContinueTurn && rollNum <= 3) {
             System.out.println("Roll #" + rollNum);
@@ -71,15 +72,13 @@ public class DiceGame {
         for (int dice : keptDices) {
             turnResult.add(dice);
         }
+
         for (int dice : dicesToRoll.getState()) {
             turnResult.add(dice);
         }
 
         System.out.print("Your turn is finished. Result: ");
-        for (int dice : turnResult) {
-            System.out.print(" | " + dice);
-        }
-        System.out.print(" |\n");
+        Dices.printArbitrary(turnResult);
 
         currentPlayer.updateScore(turnResult.stream().mapToInt(Integer::intValue).toArray());
 
@@ -93,13 +92,13 @@ public class DiceGame {
 
     public Player[] getPlayers() { return players; }
 
-    public int getTurns () { return gameTurns; }
+    public int getRounds() { return gameRounds; }
 
     public static void main(String[] args) {
 	    DiceGame game = new DiceGame();
 	    game.initialize();
 
-        for (int i = 0; i < game.getTurns() * game.getPlayers().length; i++) {
+        for (int i = 0; i < game.getRounds() * game.getPlayers().length; i++) {
             game.turn();
         }
 
