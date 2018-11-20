@@ -1,6 +1,5 @@
 package main;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.List;
 import java.util.ArrayList;
 

@@ -15,9 +15,11 @@ public class Player {
     }
 
     public void updateScore (int[] turnResult) {
-        System.out.println("Available categories:");
-        scoreTable.printAvailableFields();
-        String category = UserInteraction.question("Which category do you choose?");
+        String category = UserInteraction.selectOption(
+                "Which category do you choose?",
+                scoreTable.getAvailableFields()
+        );
+
         scoreTable.update(category, turnResult);
     }
 }

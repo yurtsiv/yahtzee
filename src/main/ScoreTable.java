@@ -3,6 +3,7 @@ package main;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
+import java.util.List;
 
 public class ScoreTable {
     private HashMap<String, Integer> scoreTable = new HashMap<>();
@@ -179,14 +180,16 @@ public class ScoreTable {
         }
     }
 
-    public void printAvailableFields () {
+    public List<String> getAvailableFields() {
+        List<String> result = new ArrayList<>();
+
         for (String key : scoreTable.keySet()) {
             if (scoreTable.get(key) == null && !key.equals("bonus")) {
-                System.out.print("| " + key + " ");
+                result.add(key);
             }
         }
 
-        System.out.print(" |\n");
+        return result;
     }
 
     public void print () {

@@ -18,6 +18,18 @@ public class UserInteraction {
         return list.stream().mapToInt(i -> i).toArray();
     }
 
+    public static String selectOption (String label, List<String> options) {
+        System.out.println(label + "\n");
+
+        for (int i = 0; i < options.size(); i++) {
+            System.out.println((i + 1) + ". " + options.get(i));
+        }
+
+        int selectedIndex = UserInteraction.getInt("", 1, options.size());
+
+        return options.get(selectedIndex -1);
+    }
+
     public static boolean yesNoQuestion (String question) {
         System.out.println(question + " (yes/no)");
         return new Scanner(System.in).hasNext("yes");
@@ -46,6 +58,6 @@ public class UserInteraction {
     }
 
     public static void printSeparator () {
-        System.out.println("----------------------------------------------------------");
+        System.out.println("---------------------------------------------------------\n");
     }
 }
