@@ -1,7 +1,7 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 public class ArrayUtils {
     public static ArrayList<Integer> takeIndexes (int[] indexes, int[] array) {
@@ -20,6 +20,26 @@ public class ArrayUtils {
                 return false;
             }
         }
+        return true;
+    }
+
+    public static boolean contains (int[] arr, int elemToFind) {
+        for (int item : arr) {
+            if (item == elemToFind) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean containsAll (int[] outerArr, int[] innerArr) {
+        for (int innerItem : innerArr) {
+            if (!ArrayUtils.contains(outerArr, innerItem)) {
+                return false;
+            }
+        }
+
         return true;
     }
 }

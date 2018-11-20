@@ -34,7 +34,7 @@ public class DiceGame {
         System.out.println(currentPlayer.getName() + "'s turn #" + currentTurn + "\n");
 
         while (shouldContinueTurn && rollNum <= 3) {
-            System.out.println("Roll #" + rollNum);
+            System.out.println("\nRoll #" + rollNum + "\n");
 
             if (keptDices.size() != 0) {
                 System.out.print("Kept dices: ");
@@ -101,15 +101,14 @@ public class DiceGame {
             game.turn();
         }
 
-	    System.out.println("---- Game finished ----- \n");
+	    System.out.println("\n---- Game finished -----\n");
         Player winner = game.getPlayers()[0];
         for (Player player : game.getPlayers()) {
-            System.out.println(player.getName() + " 's results: \n");
+            System.out.println(player.getName() + " 's results:\n");
             player.getScoreTable().print();
             int totalScore = player.getScoreTable().getTotal();
-            System.out.println("\n Total score: " + totalScore);
-
-            System.out.println("------------------------- \n");
+            System.out.println("\nTotal score: " + totalScore);
+            UserInteraction.printSeparator();
             if (totalScore > winner.getScoreTable().getTotal()) {
                 winner = player;
             }

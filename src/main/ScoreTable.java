@@ -1,5 +1,7 @@
 package main;
 
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
@@ -7,22 +9,21 @@ import java.util.List;
 
 public class ScoreTable {
     private HashMap<String, Integer> scoreTable = new HashMap<>();
+    private String[] tableKeys = new String[]{ "ones", "twos", "threes", "fours", "fives", "sixes",
+                                                "bonus", "threeOfAKind", "fourOfAKind", "fullHouse",
+                                                "smallStraight", "largeStraight", "yahtzee", "chance" };
 
     public ScoreTable() {
-        String[] tableKeys = new String[]{ "ones", "twos", "threes", "fours", "fives", "sixes",
-                                            "bonus", "threeOfAKind", "fourOfAKind", "fullHouse",
-                                            "smallStraight", "largeStraight", "yahtzee", "chance" };
-
         for (String key : tableKeys) {
             scoreTable.put(key, null);
         }
     }
 
-    private static int getAmountOf (int diceNumberToFindAmountOf, int[] turnResult) {
+    private static int getNumberOfDices(int dice, int[] turnResult) {
         int result = 0;
-        for (int dice : turnResult) {
-            if (dice == diceNumberToFindAmountOf) {
-                result ++;
+        for (int resultDice : turnResult) {
+            if (resultDice == dice) {
+                result++;
             }
         }
         return result;
@@ -32,8 +33,8 @@ public class ScoreTable {
         return Arrays.stream(turnResult).sum();
     }
 
-    private static int getSumOf (int diceNumber, int[] turnResult) {
-        return ScoreTable.getAmountOf(diceNumber, turnResult) * diceNumber;
+    private static int getSumOf (int dice, int[] turnResult) {
+        return ScoreTable.getNumberOfDices(dice, turnResult) * dice;
     }
 
     private static int getSameOfAKindResult (int amountOfSameKind, int[] turnResult) {
@@ -51,7 +52,6 @@ public class ScoreTable {
 
         return 0;
     }
-
 
     private static int getFullHouseResult (int[] turnResult) {
         boolean twoOfSameKind = false, threeOfSameKind = false;
@@ -74,16 +74,30 @@ public class ScoreTable {
             }
         }
 
-        return twoOfSameKind && threeOfSameKind ? 50 : 0;
+        return twoOfSameKind && threeOfSameKind ? 25 : 0;
     }
 
     private static int getSmallStraightResult (int[] turnResult) {
-        // return ArrayUtils.containsUniqElems(4, turnResult) ? 30 : 0;
+        if (
+            ArrayUtils.containsAll(turnResult, new int[]{1, 2, 3, 4}) ||
+            ArrayUtils.containsAll(turnResult, new int[]{2, 3, 4, 5}) ||
+            ArrayUtils.containsAll(turnResult, new int[]{3, 4, 5, 6})
+        ) {
+            return 30;
+        }
+
         return 0;
     }
 
     private static int getLargeStraightResult (int[] turnResult) {
-        // return ArrayUtils.containsUniqElems(5, turnResult) ? 40 : 0;
+        Arrays.sort(turnResult);
+        if (
+            Arrays.equals(turnResult, new int[]{1, 2, 3, 4, 5}) ||
+            Arrays.equals(turnResult, new int[]{2, 3, 4, 5, 6})
+        ) {
+            return 40;
+        }
+
         return 0;
     }
 
