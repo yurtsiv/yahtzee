@@ -7,7 +7,7 @@ public class DiceGame {
     private Player[] players;
     private int currentTurn = 1, currentPlayerIndex, gameRounds;
 
-    public void initialize () {
+    private void initialize () {
         int playersNum;
         String playerName;
 
@@ -22,13 +22,13 @@ public class DiceGame {
         gameRounds = UserInteraction.getInt("Number of rounds (3-13):", 3, 13);
     }
 
-    public void turn () {
+    private void turn () {
         UserInteraction.printSeparator();
 
         Player currentPlayer = players[currentPlayerIndex];
         int rollNum = 1;
-        Dices dicesToRoll = new Dices(5);
-        List<Integer> keptDices = new ArrayList<>(), turnResult = new ArrayList<>();
+        Dice diceToRoll = new Dice(5);
+        List<Integer> keptDice = new ArrayList<>(), turnResult = new ArrayList<>();
         boolean shouldContinueTurn = true;
 
         System.out.println(currentPlayer.getName() + "'s turn #" + currentTurn + "\n");
@@ -36,30 +36,30 @@ public class DiceGame {
         while (shouldContinueTurn && rollNum <= 3) {
             System.out.println("\nRoll #" + rollNum + "\n");
 
-            if (keptDices.size() != 0) {
-                System.out.print("Kept dices: ");
-                Dices.printArbitrary(keptDices);
-                if (UserInteraction.yesNoQuestion("Do you want to take some kept dices?")) {
-                    int[] dicesIndexesToTake = UserInteraction.getIntArray("Select dices you want to take:");
-                    for (int indexToTake : dicesIndexesToTake) {
-                        keptDices.remove(indexToTake - 1);
+            if (keptDice.size() != 0) {
+                System.out.print("Kept dice: ");
+                Dice.printArbitrary(keptDice);
+                if (UserInteraction.yesNoQuestion("Do you want to take some kept dice?")) {
+                    int[] diceIndexesToTake = UserInteraction.getIntArray("Select dice you want to take:");
+                    for (int indexToTake : diceIndexesToTake) {
+                        keptDice.remove(indexToTake - 1);
                     }
 
-                    dicesToRoll.setAmount(dicesToRoll.getAmount() + dicesIndexesToTake.length);
+                    diceToRoll.setNumber(diceToRoll.getNumber() + diceIndexesToTake.length);
                 }
             }
 
-            dicesToRoll.roll();
+            diceToRoll.roll();
             System.out.print("Roll result: ");
-            dicesToRoll.print();
+            diceToRoll.print();
 
             if (rollNum != 3) {
                 shouldContinueTurn = UserInteraction.yesNoQuestion("Do you want to continue your turn?");
                 if (shouldContinueTurn) {
-                    if (UserInteraction.yesNoQuestion("Do you want to keep any dices?")) {
-                        int[] dicesIndexesToKeep = UserInteraction.getIntArray("Select dices you want to keep:");
-                        keptDices.addAll(ArrayUtils.takeIndexes(dicesIndexesToKeep, dicesToRoll.getState()));
-                        dicesToRoll.setAmount(dicesToRoll.getAmount() - dicesIndexesToKeep.length);
+                    if (UserInteraction.yesNoQuestion("Do you want to keep any dice?")) {
+                        int[] diceIndexesToKeep = UserInteraction.getIntArray("Select dice you want to keep:");
+                        keptDice.addAll(ArrayUtils.takeIndexes(diceIndexesToKeep, diceToRoll.getState()));
+                        diceToRoll.setNumber(diceToRoll.getNumber() - diceIndexesToKeep.length);
                     }
                 }
             }
@@ -68,16 +68,13 @@ public class DiceGame {
         }
 
         // add remaining results to turn result
-        for (int dice : keptDices) {
-            turnResult.add(dice);
-        }
-
-        for (int dice : dicesToRoll.getState()) {
-            turnResult.add(dice);
+        turnResult.addAll(keptDice);
+        for (int die : diceToRoll.getState()) {
+            turnResult.add(die);
         }
 
         System.out.print("Your turn is finished. Result: ");
-        Dices.printArbitrary(turnResult);
+        Dice.printArbitrary(turnResult);
 
         currentPlayer.updateScore(turnResult.stream().mapToInt(Integer::intValue).toArray());
 
@@ -89,9 +86,9 @@ public class DiceGame {
         }
     }
 
-    public Player[] getPlayers() { return players; }
+    private Player[] getPlayers() { return players; }
 
-    public int getRounds() { return gameRounds; }
+    private int getRounds() { return gameRounds; }
 
     public static void main(String[] args) {
 	    DiceGame game = new DiceGame();

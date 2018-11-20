@@ -1,7 +1,5 @@
 package main;
 
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
@@ -19,10 +17,10 @@ public class ScoreTable {
         }
     }
 
-    private static int getNumberOfDices(int dice, int[] turnResult) {
+    private static int getNumberOfDice(int die, int[] turnResult) {
         int result = 0;
-        for (int resultDice : turnResult) {
-            if (resultDice == dice) {
+        for (int resultDie : turnResult) {
+            if (resultDie == die) {
                 result++;
             }
         }
@@ -33,18 +31,18 @@ public class ScoreTable {
         return Arrays.stream(turnResult).sum();
     }
 
-    private static int getSumOf (int dice, int[] turnResult) {
-        return ScoreTable.getNumberOfDices(dice, turnResult) * dice;
+    private static int getSumOf (int die, int[] turnResult) {
+        return ScoreTable.getNumberOfDice(die, turnResult) * die;
     }
 
-    private static int getSameOfAKindResult (int amountOfSameKind, int[] turnResult) {
+    private static int getSameOfAKindResult (int numberOfSameKind, int[] turnResult) {
         for (int kind = 1; kind <= 6; kind++) {
             int sameKindCount = 0;
-            for (int dice : turnResult) {
-                if (dice == kind) {
+            for (int resultDie : turnResult) {
+                if (resultDie == kind) {
                     sameKindCount++;
                 }
-                if (sameKindCount == amountOfSameKind) {
+                if (sameKindCount == numberOfSameKind) {
                     return ScoreTable.getSumOf(turnResult);
                 }
             }
@@ -59,8 +57,8 @@ public class ScoreTable {
         for (int kind = 1; kind <= 6; kind++) {
             int sameKindCount = 0;
 
-            for (int dice : turnResult) {
-                if (dice == kind) {
+            for (int resultDie : turnResult) {
+                if (resultDie == kind) {
                     sameKindCount++;
                 }
             }
