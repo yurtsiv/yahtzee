@@ -1,1 +1,1 @@
-https://en.wikipedia.org/wiki/Yahtzee
+Rules: https://en.wikipedia.org/wiki/Yahtzee
