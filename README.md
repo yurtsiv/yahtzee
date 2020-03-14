@@ -1,6 +1,6 @@
 # Yahtzee
 
-A simple terminal "dice" game.
+A simple dice game.
 
 Rules: https://en.wikipedia.org/wiki/Yahtzee
 
